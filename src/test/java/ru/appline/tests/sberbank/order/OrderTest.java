@@ -1,51 +1,13 @@
-package ru.appline.tests.sberbank;
+package ru.appline.tests.sberbank.order;
 
 import org.junit.*;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import ru.appline.tests.sberbank.base.BaseTests;
 
-import java.util.concurrent.TimeUnit;
-
-public class OrderTest {
-
-    public WebDriver driver;
-    public WebDriverWait wait;
-
-    @Before
-    public void before(){
-        System.setProperty("webdriver.chrome.driver", "webdrivers/chromedriver.exe");
-        driver = new ChromeDriver();
-        driver.manage().window().maximize();
-        driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
-        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-        driver.manage().timeouts().setScriptTimeout(10, TimeUnit.SECONDS);
-
-        wait = new WebDriverWait(driver, 12, 1000);
-
-        String baseUrl = "https://www.sberbank.ru/ru/person";
-        driver.get(baseUrl);
-    }
-
-    @After
-    public void after(){
-        driver.quit();
-    }
-
-    @BeforeClass
-    public static void beforeClass(){
-
-    }
-
-    @AfterClass
-    public static void afterClass(){
-
-    }
+public class OrderTest extends BaseTests {
 
     @Test
     public void test(){
@@ -86,37 +48,11 @@ public class OrderTest {
         Assert.assertEquals("Заголовок отсутствует/не соответствует требуемому",
                 "Молодёжная карта", pageTitle1.getText());
 
-        driver.getPageSource();
-
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-
-        // нажать кнопку "Оформить онлайн" под заголовком "Молодежная карта"
-//        String orderOnlineXPath = "//h1[contains(text(), 'Молодёжная карта')]/..//span[contains(text(), 'Оформить онлайн')]/..";
-//        WebElement orderOnlineButton = driver.findElement(By.xpath(orderOnlineXPath));
-//        scrollToElementJs(orderOnlineButton);
-////        try {
-////            Thread.sleep(2000);
-////        } catch (InterruptedException e) {
-////            e.printStackTrace();
-////        }
-//
-//        waitUtilElementToBeClickable(orderOnlineButton);
-//        waitUtilElementToBeVisible(orderOnlineButton);
-//
-//        JavascriptExecutor executor = (JavascriptExecutor)driver;
-//        executor.executeScript("arguments[0].click();", orderOnlineButton);
-////        orderOnlineButton.click();
         // закрываем куки
         WebElement closeCookies = driver.findElement(By.xpath("//button[text()='Закрыть']"));
         closeCookies.click();
 
         // заполнить поля данными
-        scrollToElementJs(driver.findElement(By.xpath("//h2[text()='Основной документ']")));
         fillInputField(driver.findElement(By.xpath("//input[@data-name = 'lastName']")), "Иванов");
         fillInputField(driver.findElement(By.xpath("//input[@data-name = 'firstName']")), "Иван");
         fillInputField(driver.findElement(By.xpath("//input[@data-name = 'middleName']")), "Иванович");
@@ -125,8 +61,13 @@ public class OrderTest {
         fillInputField(driver.findElement(By.xpath("//input[@data-name = 'email']")), "qwerty@mail.ru");
 
         WebElement phoneField = driver.findElement(By.xpath("//input[@data-name = 'phone']"));
-
+        scrollToElementJs(phoneField);
         waitUtilElementToBeClickable(phoneField);
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         phoneField.click();
         phoneField.sendKeys("9999999999");
         Assert.assertEquals("Поле было заполнено некорректно",
@@ -137,21 +78,20 @@ public class OrderTest {
 
         String furtherXPath = "//span[contains(text(), 'Далее')]/..";
         WebElement furtherButton = driver.findElement(By.xpath(furtherXPath));
+        scrollToElementJs(furtherButton);
         waitUtilElementToBeClickable(furtherButton);
-//        furtherButton.click();
         JavascriptExecutor executor = (JavascriptExecutor)driver;
         executor.executeScript("arguments[0].click();", furtherButton);
+
         // проверка написей "Обязательное поле" у незаполненных полей
         checkErrorMessageAtField(driver.findElement(By.xpath("//input[@data-name = 'series']")), "Обязательное поле");
         checkErrorMessageAtField(driver.findElement(By.xpath("//input[@data-name = 'number']")), "Обязательное поле");
-        checkErrorMessageAtField(driver.findElement(By.xpath("//input[@data-name = 'issueDate']")), "Обязательное поле");
+
+        WebElement issueDateError = driver.findElement(By.xpath("//input[@data-name = 'issueDate']/../../..//div[@class = 'odcui-error__text']"));
+        Assert.assertEquals("Проверка ошибки у поля не была пройдена",
+                "Обязательное поле", issueDateError.getText());
+
         checkErrorMessageAtField(driver.findElement(By.xpath("//div[text() = 'Я соглашаюсь на']/button")), "Обязательное поле");
-
-
-
-
-
-
     }
 
     private void checkErrorMessageAtField(WebElement element, String errorMessage) {
@@ -161,7 +101,6 @@ public class OrderTest {
     }
 
     private void waitUtilElementToBeClickable(WebElement element) {
-//        scrollToElementJs(element);
         wait.until(ExpectedConditions.elementToBeClickable(element));
     }
 
@@ -170,7 +109,6 @@ public class OrderTest {
     }
 
     private void fillInputField(WebElement element, String value) {
-//        waitUtilElementToBeClickable(element);
         element.clear();
         element.sendKeys(value);
         Assert.assertEquals("Поле было заполнено некорректно",
