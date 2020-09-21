@@ -38,10 +38,10 @@ public class BaseTests {
         driver.quit();
     }
 
-    protected void checkErrorMessageAtField(WebElement element, String errorMessage) {
+    protected void checkErrorMessageAtField(WebElement element) {
         element = element.findElement(By.xpath("./..//div[@class = 'odcui-error__text']"));
         Assert.assertEquals("Проверка ошибки у поля не была пройдена",
-                errorMessage, element.getText());
+                "Обязательное поле", element.getText());
     }
 
     protected void waitUtilElementToBeClickable(WebElement element) {
