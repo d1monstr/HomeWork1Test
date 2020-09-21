@@ -73,8 +73,6 @@ public class OrderTest extends BaseTests {
                 "+7 (999) 999-99-99", phoneField.getAttribute("value"));
 
         // нажать кнопку "Далее"
-        scrollToElementJs(driver.findElement(By.xpath("//div[text()='Страница была вам полезна?']")));
-
         String furtherXPath = "//span[contains(text(), 'Далее')]/..";
         WebElement furtherButton = driver.findElement(By.xpath(furtherXPath));
         scrollToElementJs(furtherButton);
@@ -83,13 +81,13 @@ public class OrderTest extends BaseTests {
         executor.executeScript("arguments[0].click();", furtherButton);
 
         // проверка написей "Обязательное поле" у незаполненных полей
-        checkErrorMessageAtField(driver.findElement(By.xpath("//input[@data-name = 'series']")), "Обязательное поле");
-        checkErrorMessageAtField(driver.findElement(By.xpath("//input[@data-name = 'number']")), "Обязательное поле");
+        checkErrorMessageAtField(driver.findElement(By.xpath("//input[@data-name = 'series']")));
+        checkErrorMessageAtField(driver.findElement(By.xpath("//input[@data-name = 'number']")));
 
         WebElement issueDateError = driver.findElement(By.xpath("//input[@data-name = 'issueDate']/../../..//div[@class = 'odcui-error__text']"));
         Assert.assertEquals("Проверка ошибки у поля не была пройдена",
                 "Обязательное поле", issueDateError.getText());
 
-        checkErrorMessageAtField(driver.findElement(By.xpath("//div[text() = 'Я соглашаюсь на']/button")), "Обязательное поле");
+        checkErrorMessageAtField(driver.findElement(By.xpath("//div[text() = 'Я соглашаюсь на']/button")));
     }
 }
