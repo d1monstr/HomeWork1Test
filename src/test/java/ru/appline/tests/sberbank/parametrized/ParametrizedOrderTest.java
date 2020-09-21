@@ -6,7 +6,6 @@ import org.junit.runners.Parameterized;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import ru.appline.tests.sberbank.base.BaseTests;
 
 import java.util.Arrays;
@@ -116,32 +115,4 @@ public class ParametrizedOrderTest extends BaseTests {
 
         checkErrorMessageAtField(driver.findElement(By.xpath("//div[text() = 'Я соглашаюсь на']/button")), "Обязательное поле");
     }
-
-    private void checkErrorMessageAtField(WebElement element, String errorMessage) {
-        element = element.findElement(By.xpath("./..//div[@class = 'odcui-error__text']"));
-        Assert.assertEquals("Проверка ошибки у поля не была пройдена",
-                errorMessage, element.getText());
-    }
-
-    private void waitUtilElementToBeClickable(WebElement element) {
-        wait.until(ExpectedConditions.elementToBeClickable(element));
-    }
-
-    private void waitUtilElementToBeVisible(WebElement element) {
-        wait.until(ExpectedConditions.visibilityOf(element));
-    }
-
-    private void fillInputField(WebElement element, String value) {
-        element.clear();
-        element.sendKeys(value);
-        Assert.assertEquals("Поле было заполнено некорректно",
-                value, element.getAttribute("value"));
-
-    }
-
-    private void scrollToElementJs(WebElement element) {
-        JavascriptExecutor javascriptExecutor = (JavascriptExecutor) driver;
-        javascriptExecutor.executeScript("arguments[0].scrollIntoView(true);", element);
-    }
-
 }

@@ -1,9 +1,14 @@
 package ru.appline.tests.sberbank.base;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.util.concurrent.TimeUnit;
@@ -11,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 public class BaseTests {
 
     protected WebDriver driver;
-    protected WebDriverWait wait;
+    private WebDriverWait wait;
 
     @Before
     public void before(){
@@ -31,6 +36,33 @@ public class BaseTests {
     @After
     public void after(){
         driver.quit();
+    }
+
+    protected void checkErrorMessageAtField(WebElement element, String errorMessage) {
+        element = element.findElement(By.xpath("./..//div[@class = 'odcui-error__text']"));
+        Assert.assertEquals("Проверка ошибки у поля не была пройдена",
+                errorMessage, element.getText());
+    }
+
+    protected void waitUtilElementToBeClickable(WebElement element) {
+        wait.until(ExpectedConditions.elementToBeClickable(element));
+    }
+
+    protected void waitUtilElementToBeVisible(WebElement element) {
+        wait.until(ExpectedConditions.visibilityOf(element));
+    }
+
+    protected void fillInputField(WebElement element, String value) {
+        element.clear();
+        element.sendKeys(value);
+        Assert.assertEquals("Поле было заполнено некорректно",
+                value, element.getAttribute("value"));
+
+    }
+
+    protected void scrollToElementJs(WebElement element) {
+        JavascriptExecutor javascriptExecutor = (JavascriptExecutor) driver;
+        javascriptExecutor.executeScript("arguments[0].scrollIntoView(true);", element);
     }
 
 }
